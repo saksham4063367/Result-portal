@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Results - Examination Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Open Sans', sans-serif;
+      font-size: 14px;
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    .top-strip {
+      background: #1a3a6b;
+      color: #fff;
+      text-align: center;
+      padding: 6px;
+      font-size: 12px;
+    }
+
+    header {
+      background: #fff;
+      border-bottom: 3px solid #1a3a6b;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .logo-box {
+      width: 70px; height: 70px;
+      background: #1a3a6b;
+      border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff;
+      font-size: 28px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .header-title h1 { font-size: 18px; font-weight: 700; color: #1a3a6b; }
+    .header-title p { font-size: 12px; color: #666; margin-top: 3px; }
+
+    nav { background: #1a3a6b; display: flex; flex-wrap: wrap; }
+    nav a {
+      color: #fff; text-decoration: none;
+      padding: 10px 18px; font-size: 13px; font-weight: 600;
+      border-right: 1px solid rgba(255,255,255,0.15);
+      transition: background 0.2s;
+    }
+    nav a:hover, nav a.active { background: #c0392b; }
+
+    .container {
+      max-width: 960px; margin: 20px auto;
+      padding: 0 16px; display: flex; gap: 20px;
+    }
+
+    .sidebar { width: 200px; flex-shrink: 0; }
+    .sidebar-box {
+      background: #fff; border: 1px solid #ccc;
+      border-top: 3px solid #1a3a6b; margin-bottom: 14px;
+    }
+    .sidebar-box h3 {
+      background: #1a3a6b; color: #fff;
+      padding: 8px 12px; font-size: 13px; font-weight: 700;
+    }
+    .sidebar-box ul { list-style: none; padding: 8px 0; }
+    .sidebar-box ul li a {
+      display: block; padding: 6px 14px;
+      color: #1a3a6b; text-decoration: none;
+      font-size: 13px; border-bottom: 1px solid #eee;
+      transition: background 0.15s;
+    }
+    .sidebar-box ul li a:hover { background: #eef2f8; color: #c0392b; }
+
+    .main-content { flex: 1; }
+
+    .page-title {
+      background: #1a3a6b; color: #fff;
+      padding: 10px 16px; font-size: 15px; font-weight: 700;
+      margin-bottom: 16px; border-left: 4px solid #c0392b;
+    }
+
+    .form-card {
+      background: #fff; border: 1px solid #ccc;
+      padding: 24px; margin-bottom: 16px;
+    }
+    .form-card h3 {
+      font-size: 14px; font-weight: 700; color: #1a3a6b;
+      border-bottom: 2px solid #1a3a6b;
+      padding-bottom: 8px; margin-bottom: 20px;
+    }
+
+    table.form-table { width: 100%; border-collapse: collapse; }
+    table.form-table tr td { padding: 8px 6px; vertical-align: middle; }
+    table.form-table tr td:first-child { width: 40%; font-weight: 600; color: #333; }
+    .req { color: #c0392b; margin-left: 2px; }
+
+    select, input[type="text"] {
+      width: 100%; padding: 7px 10px;
+      border: 1px solid #aaa; border-radius: 3px;
+      font-size: 13px; font-family: 'Open Sans', sans-serif;
+      color: #333; background: #fff; outline: none;
+      transition: border-color 0.2s;
+    }
+    select:focus, input[type="text"]:focus { border-color: #1a3a6b; }
+
+    .btn-row { margin-top: 20px; display: flex; gap: 10px; }
+    .btn-submit {
+      background: #1a3a6b; color: #fff; border: none;
+      padding: 9px 28px; font-size: 13px; font-weight: 700;
+      font-family: 'Open Sans', sans-serif; border-radius: 3px;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .btn-submit:hover { background: #c0392b; }
+    .btn-reset {
+      background: #888; color: #fff; border: none;
+      padding: 9px 20px; font-size: 13px; font-weight: 600;
+      font-family: 'Open Sans', sans-serif; border-radius: 3px;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .btn-reset:hover { background: #555; }
+
+    .note-box {
+      background: #fff8e1; border: 1px solid #f0c040;
+      border-left: 4px solid #f0c040;
+      padding: 10px 14px; font-size: 12px;
+      color: #7a5c00; margin-bottom: 16px; line-height: 1.6;
+    }
+
+    /* LOADING */
+    #loadingOverlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.65); z-index: 999;
+      align-items: center; justify-content: center;
+      flex-direction: column; gap: 20px;
+    }
+    #loadingOverlay.active { display: flex; }
+    .spinner {
+      width: 60px; height: 60px;
+      border: 6px solid rgba(255,255,255,0.3);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-msg { color: #fff; font-size: 15px; font-weight: 600; }
+
+    /* RESULT */
+    #resultSection {
+      display: none; background: #fff;
+      border: 1px solid #ccc; padding: 20px; margin-top: 16px;
+    }
+    #resultSection.active { display: block; animation: fadeIn 0.4s ease; }
+    @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+    #resultSection h3 {
+      font-size: 14px; font-weight: 700; color: #1a3a6b;
+      border-bottom: 2px solid #1a3a6b;
+      padding-bottom: 8px; margin-bottom: 16px;
+    }
+    #resultImage { max-width: 100%; display: block; margin: 0 auto; border: 1px solid #ccc; }
+    .img-placeholder {
+      text-align: center; padding: 30px; color: #888;
+      font-size: 13px; background: #f9f9f9; border: 2px dashed #ccc;
+    }
+
+    footer {
+      background: #1a3a6b; color: rgba(255,255,255,0.7);
+      text-align: center; padding: 14px;
+      font-size: 12px; margin-top: 30px;
+    }
+    footer a { color: #aac4f0; text-decoration: none; }
+  </style>
+</head>
+<body>
+
+  <div class="top-strip">Examination Results Portal — For Educational / Testing Purposes Only</div>
+
+  <header>
+    <div class="logo-box" style="background:#fff; padding:4px;">
+      <img src="https://upload.wikimedia.org/wikipedia/en/thumb/3/3e/CISCE_logo.png/120px-CISCE_logo.png" alt="CISCE Logo" style="width:100%; height:100%; object-fit:contain;"/>
+    </div>
+    <div class="header-title">
+      <h1>Examination Results Portal</h1>
+      <p>Results for ICSE (Class X) &amp; ISC (Class XII) Examinations</p>
+    </div>
+  </header>
+
+  <nav>
+    <a href="#" class="active">Home</a>
+    <a href="#">Results</a>
+    <a href="#">Verification</a>
+    <a href="#">Schools</a>
+    <a href="#">Contact Us</a>
+  </nav>
+
+  <div class="container">
+
+    <div class="sidebar">
+      <div class="sidebar-box">
+        <h3>Quick Links</h3>
+        <ul>
+          <li><a href="#">ICSE Results</a></li>
+          <li><a href="#">ISC Results</a></li>
+          <li><a href="#">CVR Results</a></li>
+          <li><a href="#">Mark Verification</a></li>
+          <li><a href="#">Gazette</a></li>
+        </ul>
+      </div>
+      <div class="sidebar-box">
+        <h3>Important</h3>
+        <ul>
+          <li><a href="#">Notifications</a></li>
+          <li><a href="#">Circulars</a></li>
+          <li><a href="#">Downloads</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="page-title">📋 View Examination Result</div>
+
+      <div class="form-card">
+        <h3>Enter Candidate Details</h3>
+        <table class="form-table">
+          <tr>
+            <td>Examination <span class="req">*</span></td>
+            <td>
+              <select id="examType">
+                <option value="">-- Select --</option>
+                <option>ICSE (Class X)</option>
+                <option>ISC (Class XII)</option>
+                <option>CVR (Class X)</option>
+                <option>CVR (Class XII)</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>Year <span class="req">*</span></td>
+            <td>
+              <select id="examYear">
+                <option value="">-- Select --</option>
+                <option>2026</option>
+                <option>2025</option>
+                <option>2024</option>
+                <option>2023</option>
+                <option>2022</option>
+                <option>2021</option>
+                <option>2020</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>Index Number <span class="req">*</span></td>
+            <td><input type="text" id="indexNo" placeholder="Enter your Index Number"/></td>
+          </tr>
+          <tr>
+            <td>Unique ID <span class="req">*</span></td>
+            <td><input type="text" id="uniqueId" placeholder="Enter your Unique ID"/></td>
+          </tr>
+        </table>
+
+        <div class="btn-row">
+          <button class="btn-submit" onclick="showResult()">Show Result</button>
+          <button class="btn-reset" onclick="resetForm()">Reset</button>
+        </div>
+      </div>
+
+      <div id="resultSection">
+        <h3>📄 Candidate Result</h3>
+        <!--
+          IMPORTANT: Replace 'your-result-image.jpg' with your actual image filename.
+          Upload the image to the same folder as index.html in your GitHub repo.
+        -->
+        <img id="resultImage"
+             src="your-result-image.jpg"
+             alt="Result"
+             onerror="this.style.display='none'; document.getElementById('imgPlaceholder').style.display='block'"/>
+        <div id="imgPlaceholder" class="img-placeholder" style="display:none">
+          📌 Upload your result image named <strong>your-result-image.jpg</strong> to your GitHub repository folder.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="loadingOverlay">
+    <div class="spinner"></div>
+    <div class="loading-msg">Please wait... Fetching Result</div>
+  </div>
+
+  <footer>
+    &copy; 2024 Examination Results Portal &nbsp;|&nbsp; For Testing Purposes Only &nbsp;|&nbsp;
+    <a href="#">Privacy Policy</a> &nbsp;|&nbsp; <a href="#">Disclaimer</a>
+  </footer>
+
+  <script>
+    function showResult() {
+      const exam = document.getElementById('examType').value;
+      const year = document.getElementById('examYear').value;
+      const index = document.getElementById('indexNo').value.trim();
+      const uid = document.getElementById('uniqueId').value.trim();
+
+      if (!exam || !year || !index || !uid) {
+        alert('Please fill in all the required fields.');
+        return;
+      }
+
+      document.getElementById('resultSection').classList.remove('active');
+      document.getElementById('loadingOverlay').classList.add('active');
+
+      setTimeout(() => {
+        document.getElementById('loadingOverlay').classList.remove('active');
+        const rs = document.getElementById('resultSection');
+        rs.classList.add('active');
+        rs.scrollIntoView({ behavior: 'smooth' });
+      }, 5500);
+    }
+
+    function resetForm() {
+      document.getElementById('examType').value = '';
+      document.getElementById('examYear').value = '';
+      document.getElementById('indexNo').value = '';
+      document.getElementById('uniqueId').value = '';
+      document.getElementById('resultSection').classList.remove('active');
+    }
+  </script>
+
+</body>
+</html>
